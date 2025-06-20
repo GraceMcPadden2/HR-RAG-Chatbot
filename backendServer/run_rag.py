@@ -8,7 +8,7 @@ OPENSEARCH_INDEX = "my-vector-index"
 VECTOR_FIELD = "vector"
 K = 3  # Top-K retrieved chunks
 BEDROCK_REGION = "us-east-2"
-GEMINI_API_KEY = "API-KEY-HERE"
+GEMINI_API_KEY = "API KEY HERE"
 GEMINI_ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
 
 #Clients
