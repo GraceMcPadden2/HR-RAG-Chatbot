@@ -6,21 +6,30 @@ const App = () => {
   const inputRef = useRef(null);
   const bottomRef = useRef(null); 
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     const trimmed = input.trim();
     if (trimmed === '') return;
-
+  
     const userMessage = { type: 'user', text: trimmed };
-    const botReply = { type: 'bot', text: 'Not set up' };
-
-    setMessages((prev) => [...prev, userMessage, botReply]);
+    setMessages((prev) => [...prev, userMessage]);
     setInput('');
-
-    // Reset height on send
-    if (inputRef.current) {
-      inputRef.current.style.height = 'auto';
+  
+    try {
+      const res = await fetch('http://localhost:5001/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: trimmed }),
+      });
+  
+      const data = await res.json();
+      const botReply = { type: 'bot', text: data.answer || '[No answer returned]' };
+      setMessages((prev) => [...prev, botReply]);
+    } catch (error) {
+      console.error('Backend error:', error);
+      setMessages((prev) => [...prev, { type: 'bot', text: 'I am experiencing technical difficulties. Please try again later.' }]);
     }
   };
+  
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
@@ -47,7 +56,7 @@ const App = () => {
 
   return (
     <div className="app-container">
-      <h1 className="title">Chat</h1>
+      <h1 className="title">HR Chatbot</h1>
       <p className="subtitle">Type a message and press Enter or tap the arrow</p>
 
       <div className="messages-container">

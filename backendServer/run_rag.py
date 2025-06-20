@@ -6,9 +6,9 @@ import json
 OPENSEARCH_ENDPOINT = "http://localhost:9200"
 OPENSEARCH_INDEX = "my-vector-index"
 VECTOR_FIELD = "vector"
-K = 2  # Top-K retrieved chunks
+K = 3  # Top-K retrieved chunks
 BEDROCK_REGION = "us-east-2"
-GEMINI_API_KEY = "AIzaSyAic2-mm9NoakTHrtMdA3kzvZ70Vv46t4g"
+GEMINI_API_KEY = "API-KEY-HERE"
 GEMINI_ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
 
 #Clients
@@ -46,7 +46,9 @@ def knn_search(query_vector):
 # Build Prompt
 def build_prompt(user_question, context_chunks):
     context = "\n\n".join(context_chunks)
-    return f"""Answer the following question using the provided context.
+    return f"""You are a helpful HR assistant designed to answer questions related to various company policies.
+    Please use only the context provided to answer the users question. Always return answers in a clear and consise manner.
+    If the information is not in the context tell the user you do not have that information.
 
 Context:
 {context}
@@ -73,15 +75,10 @@ def call_gemini(prompt):
 def run_rag(query_text):
     embedding = get_titan_embedding(query_text)
     chunks = knn_search(embedding)
+    print(chunks)
     prompt = build_prompt(query_text, chunks)
     answer = call_gemini(prompt)
-
-    print("\nRetrieved Chunks:")
-    for i, chunk in enumerate(chunks, 1):
-        print(f"{i}. {chunk[:200]}...\n")
-
-    print("\nGemini Answer:")
-    print(answer)
+    return(answer)
 
 # Main
 if __name__ == "__main__":
