@@ -4,6 +4,7 @@ import boto3
 import re
 import os
 import PyPDF2
+import re
 
 #s3 = boto3.client('s3')
 bedrock = boto3.client('bedrock-runtime', region_name='us-east-2')
@@ -34,8 +35,24 @@ response = requests.put(
     data=json.dumps(mapping)
 )
 
-def split_text(text, chunk_size=100):
-    return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+def split_text(text, max_chunk_words=50):
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    chunks = []
+    current_chunk = []
+
+    for sentence in sentences:
+        words = sentence.split()
+        if sum(len(s.split()) for s in current_chunk) + len(words) <= max_chunk_words:
+            current_chunk.append(sentence)
+        else:
+            chunks.append(' '.join(current_chunk))
+            current_chunk = [sentence]
+
+    if current_chunk:
+        chunks.append(' '.join(current_chunk))
+
+    return chunks
+
 
 def get_pdf_text(file_path):
     text = ""
@@ -66,7 +83,7 @@ def store_in_opensearch(text, vector):
         headers={"Content-Type": "application/json"},
         json=document
     )
-    print(f"OpenSearch response: {response.status_code} — {response.text}")
+    # print(f"OpenSearch response: {response.status_code} — {response.text}")
     return response.status_code
 
 def embedd_from_path(path):
@@ -74,12 +91,13 @@ def embedd_from_path(path):
     status = []
 
     for chunk in split_text(text):
+        print(chunk)
         vector = get_embedding(chunk)
         status.append(store_in_opensearch(chunk, vector))
 
 
-    print(status)
-    print(json.dumps('success'))
+    # print(status)
+    # print(json.dumps('success'))
 
 def embedd_from_text(text):
     status = []
@@ -88,11 +106,12 @@ def embedd_from_text(text):
         vector = get_embedding(chunk)
         status.append(store_in_opensearch(chunk, vector))
 
-    print(status)
-    print(json.dumps('success'))
+    # print(status)
+    # print(json.dumps('success'))
 
 
 if __name__ == "__main__":
-   paths = ["./MOCK_HR_DOC.pdf"]
-   for path in paths:
+    paths = ["./Remote_work_policy.pdf"]
+    for path in paths:
        embedd_from_path(path)
+    print("documents embedded.")

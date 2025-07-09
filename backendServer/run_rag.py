@@ -8,7 +8,7 @@ OPENSEARCH_INDEX = "my-vector-index"
 VECTOR_FIELD = "vector"
 K = 3  # Top-K retrieved chunks
 BEDROCK_REGION = "us-east-2"
-GEMINI_API_KEY = "API KEY HERE"
+GEMINI_API_KEY = "AIzaSyBnllNus3WXLaZ8ki7kWKaA2ZCgDunhgzQ"
 GEMINI_ENDPOINT = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
 
 #Clients
@@ -47,7 +47,7 @@ def knn_search(query_vector):
 def build_prompt(user_question, context_chunks):
     context = "\n\n".join(context_chunks)
     return f"""You are a helpful HR assistant designed to answer questions related to various company policies.
-    Please use only the context provided to answer the users question. Always return answers in a clear and consise manner.
+    Please use only the context provided to answer the users question. Always be highly professional. Always return answers in a clear and consise manner.
     If the information is not in the context tell the user you do not have that information.
 
 Context:
