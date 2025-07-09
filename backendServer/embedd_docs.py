@@ -36,7 +36,7 @@ response = requests.put(
 )
 
 def split_text(text, max_chunk_words=50):
-    sentences = re.split(r'(?<=[.!?])\s+', text)
+    sentences = re.split(r'(?<=[-.!?])\s+', text)
     chunks = []
     current_chunk = []
 
@@ -91,7 +91,7 @@ def embedd_from_path(path):
     status = []
 
     for chunk in split_text(text):
-        print(chunk)
+        print(chunk, "\n\n")
         vector = get_embedding(chunk)
         status.append(store_in_opensearch(chunk, vector))
 
