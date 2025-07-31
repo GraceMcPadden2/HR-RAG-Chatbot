@@ -64,7 +64,7 @@ docker-compose up
 
 **Step 5: Application use**
 
-**Add docyments:**
+**Add documents:**
 * run command ```python embedd_docs.py```
 
 **Query Chatbot:**
